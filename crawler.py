@@ -2,12 +2,20 @@ import time
 import re
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+
+import shutil, os
+from pathlib import Path
+
+import logging
+logging.getLogger("streamlit.watcher.local_sources_watcher").setLevel(logging.WARNING)
+
 
 # --- 크롤링 함수들 정의 시작 ---
 MAX_REVIEWS = 100

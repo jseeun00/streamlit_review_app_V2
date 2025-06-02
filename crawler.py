@@ -13,18 +13,45 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 MAX_REVIEWS = 100
 CLICK_BATCH = 10
 
-def init_driver(headless=False):
-    options = webdriver.ChromeOptions()
-    options.add_argument("--start-maximized")
-    options.add_argument("--lang=ko")
+def init_driver():
+    # ① 최소 옵션(Headless, No-Sandbox, Dev-Shm-Usage)
+    options = Options()
+    options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--remote-allow-origins=*")  # 필수 옵션
-    if headless:
-        options.add_argument("--headless")
-        options.add_argument("--disable-gpu")
-    service = Service(ChromeDriverManager().install())
+    options.add_argument("--disable-gpu")
+
+    # ② chromedriver 경로 결정: ENV → which() → (없으면 에러)
+    env_drv = os.getenv("CHROMEDRIVER_BIN")
+    if env_drv and Path(env_drv).is_file():
+        driver_path = env_drv
+    elif (drv := shutil.which("chromedriver")):
+        driver_path = drv
+    else:
+        raise FileNotFoundError(
+            "chromedriver를 찾을 수 없습니다. "
+            "컨테이너에 chromium-driver 패키지가 설치되어 있는지 확인하세요."
+        )
+    service = Service(driver_path)
+
+    # ③ chromium 바이너리 경로 결정: ENV → which() → (없으면 에러)
+    env_chrome = os.getenv("CHROME_BIN")
+    if env_chrome and Path(env_chrome).is_file():
+        chrome_path = env_chrome
+    elif (bin1 := shutil.which("chromium")):
+        chrome_path = bin1
+    elif (bin2 := shutil.which("chromium-browser")):
+        chrome_path = bin2
+    else:
+        raise FileNotFoundError(
+            "Chrome/Chromium 바이너리를 찾을 수 없습니다. "
+            "컨테이너에 chromium 패키지가 설치되어 있는지 확인하세요."
+        )
+    options.binary_location = chrome_path  # 여기가 반드시 필요합니다!
+
+    # ④ 최종 드라이버 객체 반환
     return webdriver.Chrome(service=service, options=options)
+
 
 # --- Kakao Map Functions ---
 def crawl_kakao_reviews(restaurant_name):

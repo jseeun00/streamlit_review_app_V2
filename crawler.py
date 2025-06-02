@@ -56,7 +56,7 @@ def init_driver():
 # --- Kakao Map Functions ---
 def crawl_kakao_reviews(restaurant_name):
     import re
-    driver = init_driver(headless=True)
+    driver = init_driver()
     print(f"[Kakao] '{restaurant_name}' 검색 시작")
     try:
         driver.get("https://map.kakao.com/")
@@ -257,7 +257,7 @@ def get_top_reviews(driver, topn=MAX_REVIEWS, max_scrolls=12):
 
 # --- Google Maps Crawling Function ---
 def crawl_google_reviews(restaurant_name):
-    driver = init_driver(headless=True)
+    driver = init_driver()
     print(f"[Google] '{restaurant_name}' 검색 시작")
     try:
         driver.get("https://www.google.com/maps")

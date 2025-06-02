@@ -56,7 +56,7 @@ def init_driver():
 # --- Kakao Map Functions ---
 def crawl_kakao_reviews(restaurant_name):
     import re
-    driver = init_driver(=True)
+    driver = init_driver(headless=True)
     print(f"[Kakao] '{restaurant_name}' 검색 시작")
     try:
         driver.get("https://map.kakao.com/")
